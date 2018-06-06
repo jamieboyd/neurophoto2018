@@ -13,12 +13,12 @@ GPIO.setup(in_pin,GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
 while True:
     try:
         while GPIO.input(in_pin) is GPIO.LOW:
-            pass
-            # sleep (sleep_time)
+            #pass
+            sleep (sleep_time)
         print ('GPIO pin ' + str (in_pin) + ' went HIGH')
         while GPIO.input(in_pin) is GPIO.HIGH:
-            pass
-            #sleep (sleep_time)
+            #pass
+            sleep (sleep_time)
         print ('GPIO pin ' + str (in_pin) + ' went LOW')
     except KeyboardInterrupt:
         GPIO.cleanup()
