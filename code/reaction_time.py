@@ -58,8 +58,9 @@ GPIO.cleanup()
 
 dt = datetime.fromtimestamp(time())
 date_str = '{:04}_'.format(dt.year) + '{:02}_'.format (dt.month) + '{:02}'.format (dt.day)
-file_name = '/home/pi/Documents/' + name + '_' + date_str
+file_name = '/home/pi/Documents/' + name + '_' + date_str + ".txt"
 with open (file_name, 'a') as out_file:
     for trial in range (0, num_trials):
-        out_file.write ('{:.3f}\n'.format (date_array [trial]))
-out_file.close()
+        out_file.write ('{:.3f}\n'.format (data_array [trial]))
+    out_file.close()
+    print ('Finished. Results printed to ' + file_name)
