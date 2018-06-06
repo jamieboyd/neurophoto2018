@@ -29,6 +29,7 @@ GPIO.setup (led_pin, GPIO.OUT)
 
 GPIO.output (led_pin, GPIO.HIGH)
 for trial in range (0, num_trials):
+    print ('Put finger on start button to start a trial')
     while True:
         result = GPIO.wait_for_edge(start_pin, GPIO.RISING, bouncetime= bounce_time_ms, timeout=100)
         if result is not None:
@@ -58,7 +59,7 @@ GPIO.cleanup()
 
 dt = datetime.fromtimestamp(time())
 date_str = '{:04}_'.format(dt.year) + '{:02}_'.format (dt.month) + '{:02}'.format (dt.day)
-file_name = '/home/pi/Documents/' + name + '_' + date_str + ".txt"
+file_name = '/home/pi/Desktop/' + name + '_' + date_str + ".txt"
 with open (file_name, 'a') as out_file:
     for trial in range (0, num_trials):
         out_file.write ('{:.3f}\n'.format (data_array [trial]))
