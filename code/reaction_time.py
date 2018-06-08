@@ -17,10 +17,10 @@ bounce_time_ms = 5
 max_time = 1000
 inter_trial_time = 3 # +/- 1 second for randomization
 
-def flash ():
+def flash (sleep_time):
     for i in range (0, 10):
         GPIO.output (led_pin, not (GPIO.input (led_pin)))
-        sleep (0.05)
+        sleep (sleep_time)
 
 def blink ():
     GPIO.output (led_pin, not (GPIO.input (led_pin)))
@@ -58,7 +58,7 @@ def main ():
             if result is not None: # subject lifted finger before LED was lit
                 data_array [trial] = -1
                 print ('Finger was lifted from start button before LED was lit - trial aborted')
-                flash ()
+                flash (0.05)
             else: # subject waited with finger on start switch till start time, so turn on LED and start timing
                 GPIO.output (led_pin, GPIO.LOW)
                 start_time = time()
@@ -67,7 +67,7 @@ def main ():
                 if result is None:
                     data_array [trial] = -2
                     print ('Reaction button not pressed before time out')
-                    flash ()
+                    flash (0.05)
                 else: # subject pressed the react button before time out
                     data_array [trial] = end_time - start_time
                     print ('Measured reaction, time = {:.3f} seconds'.format(data_array [trial]))
@@ -78,7 +78,7 @@ def main ():
         num_trials = trial
         print ('Remaining trials cancelled after ' + str (num_trials) + ' trials')
     finally:
-        flash()
+        flash(0.2)
         GPIO.cleanup()
 
 
