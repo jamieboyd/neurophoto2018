@@ -41,7 +41,7 @@ def main ():
             last_falling = falling_edges
         except KeyboardInterrupt:
             print ('GPIO pin ' + str (in_pin) + ' went HIGH a total of ' + str (rising_edges) + ' times') # print totals
-            print ('GPIO pin ' + str (in_pin) + ' went LOW a total of ' + str (rising_edges) + ' times')
+            print ('GPIO pin ' + str (in_pin) + ' went LOW a total of ' + str (falling_edges) + ' times')
             GPIO.cleanup()
             break
 
