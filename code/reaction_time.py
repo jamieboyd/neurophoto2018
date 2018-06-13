@@ -22,11 +22,6 @@ def flash (sleep_time):
         GPIO.output (led_pin, not (GPIO.input (led_pin)))
         sleep (sleep_time)
 
-def blink ():
-    GPIO.output (led_pin, not (GPIO.input (led_pin)))
-    sleep (1)
-    GPIO.output (led_pin, not (GPIO.input (led_pin)))
-
 def main ():
     name = input ('Subject Name= ')
     name = name.replace(' ', '_')
