@@ -8,21 +8,21 @@ from array import array
 import RPi.GPIO as GPIO
 
 # constants
-start_pin = 21
-react_pin = 20
-led_pin =26
+led_pinG =26
+start_pinG = 21
+react_pinG = 20
 
-bounce_time_ms = 5
+bounce_time_ms = 2
 
 max_time = 1000
 inter_trial_time = 3 # +/- 1 second for randomization
 
-def flash (sleep_time):
+def flash (led_pin, sleep_time):
     for i in range (0, 10):
         GPIO.output (led_pin, not (GPIO.input (led_pin)))
         sleep (sleep_time)
 
-def main ():
+def main (led_pin, start_pin, react_pin):
     name = input ('Subject Name= ')
     name = name.replace(' ', '_')
     num_trials = int (input ('number of trials='))
@@ -53,7 +53,7 @@ def main ():
             if result is not None: # subject lifted finger before LED was lit
                 data_array [trial] = -1
                 print ('Finger was lifted from start button before LED was lit - trial aborted')
-                flash (0.05)
+                flash (led_pin, 0.05)
             else: # subject waited with finger on start switch till start time, so turn on LED and start timing
                 GPIO.output (led_pin, GPIO.LOW)
                 start_time = time()
@@ -62,7 +62,7 @@ def main ():
                 if result is None:
                     data_array [trial] = -2
                     print ('Reaction button not pressed before time out')
-                    flash (0.05)
+                    flash (led_pin, 0.05)
                 else: # subject pressed the react button before time out
                     data_array [trial] = end_time - start_time
                     print ('Measured reaction, time = {:.3f} seconds'.format(data_array [trial]))
@@ -73,7 +73,7 @@ def main ():
         num_trials = trial
         print ('Remaining trials cancelled after ' + str (num_trials) + ' trials')
     finally:
-        flash(0.2)
+        flash(led_pin, 0.2)
         GPIO.cleanup()
 
 
@@ -88,4 +88,4 @@ def main ():
 
 
 if __name__ == '__main__': # if this is the main file opened, run the main () function
-   main()
+   main(led_pinG, start_pinG, react_pinG)
