@@ -232,7 +232,7 @@ def touchToneTest():
     touch_sensor = MPR121.MPR121()
     touch_sensor.begin()
     touch_sensor.set_thresholds (8,4) # as per dirkjan
-    # test tones one more time
+    # test tones
     for tone in tones:
         tone.start_train()
         sleep (0.2)
