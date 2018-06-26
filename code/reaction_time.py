@@ -8,9 +8,9 @@ from array import array
 import RPi.GPIO as GPIO
 
 # constants
-led_pinG =26
-start_pinG = 21
-react_pinG = 20
+led_pinG =13
+start_pinG = 19
+react_pinG = 26
 
 bounce_time_ms = 2
 
@@ -74,7 +74,8 @@ def main (led_pin, start_pin, react_pin):
         print ('Remaining trials cancelled after ' + str (num_trials) + ' trials')
     finally:
         flash(led_pin, 0.2)
-        GPIO.cleanup()
+        if __name__ == '__main__':
+            GPIO.cleanup()
 
 
     dt = datetime.fromtimestamp(time())
@@ -86,6 +87,9 @@ def main (led_pin, start_pin, react_pin):
         out_file.close()
         print ('Finished. Results printed to ' + file_name)
 
-
-if __name__ == '__main__': # if this is the main file opened, run the main () function
+"""
+if this is the main file opened, run the main () function
+with pin numbers form global constants
+"""
+if __name__ == '__main__':
    main(led_pinG, start_pinG, react_pinG)

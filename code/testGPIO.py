@@ -24,9 +24,9 @@ tag =0
 # GPIO pin for driving transistor
 vibe_motor_pin = 4
 # GPIO pins for reaction time task
-react_led_pin=22
-react_start_pin = 27
-react_react_pin = 17
+react_led_pin=13
+react_start_pin = 19
+react_react_pin = 26
 # GPIO Pin for touch sensor IRQ
 touch_IRQ_pin = 5 
 # Pins for the 4 output tones
