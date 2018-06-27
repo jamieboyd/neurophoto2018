@@ -248,7 +248,7 @@ def touchToneTest():
             sleep (0.1)
     except KeyboardInterrupt:
         print ('returning to main menu')
-        # turn off al tones
+        # turn off all tones
         for tone in tones:
             tone.stop_train()
         GPIO.remove_event_detect(touch_IRQ_pin)

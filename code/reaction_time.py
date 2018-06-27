@@ -35,10 +35,10 @@ def main (led_pin, start_pin, react_pin):
     GPIO.setup (react_pin, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
     GPIO.setup (led_pin, GPIO.OUT)
 
-    GPIO.output (led_pin, GPIO.LOW)
     trial = 0
     try:
         for trial in range (0, num_trials):
+            GPIO.output (led_pin, GPIO.LOW) # turn LED on at start of  trial
             # wait for subject to put finger on start button, sending GPIO high
             if GPIO.input (start_pin) is GPIO.LOW:
                 print ('Put finger on start button to start a trial')
@@ -66,16 +66,18 @@ def main (led_pin, start_pin, react_pin):
                 else: # subject pressed the react button before time out
                     data_array [trial] = end_time - start_time
                     print ('Measured reaction, time = {:.3f} seconds'.format(data_array [trial]))
-                    GPIO.output (led_pin, GPIO.HIGH) # turn off LED to signal good trial
+                    GPIO.output (led_pin, GPIO.HIGH) # turn off LED for 0.5 seconds to signal good trial
                     sleep (0.5)
-                    GPIO.output (led_pin, GPIO.LOW) # turn LED back on again for start of next trial
     except KeyboardInterrupt:
         num_trials = trial
         print ('Remaining trials cancelled after ' + str (num_trials) + ' trials')
     finally:
         flash(led_pin, 0.2)
         if __name__ == '__main__':
-            GPIO.cleanup()
+            GPIO.cleanup(led_pin)
+            GPIO.cleanup(start_pin)
+            GPIO.cleanup(react_pin)
+            
 
 
     dt = datetime.fromtimestamp(time())
