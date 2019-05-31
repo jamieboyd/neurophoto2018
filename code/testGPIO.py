@@ -6,7 +6,6 @@ from PTSimpleGPIO import PTSimpleGPIO, Infinite_train
 import reaction_time
 from RFIDTagReader import RFIDTagReader
 
-
 """
 beam break test
 tag reader
@@ -25,9 +24,9 @@ tag =0
 # GPIO pin for driving transistor
 vibe_motor_pin = 4
 # GPIO pins for reaction time task
-react_led_pin=22
-react_start_pin = 27
-react_react_pin = 17
+react_led_pin=13
+react_start_pin = 19
+react_react_pin = 26
 # GPIO Pin for touch sensor IRQ
 touch_IRQ_pin = 5 
 # Pins for the 4 output tones
@@ -38,14 +37,14 @@ tone3_pin = 12
 # frequency ratios for a 7th chord are 20:25:30:36
 # starting at A 440, or 880, an octave higher:
 tone0_freq = 880 
-tone1_freq = tone1_freq * (25/20)
-tone2_freq = tone1_freq * (30/20)
-tone3_freq = tone1_freq * (36/20)
+tone1_freq = tone0_freq * (25/20)
+tone2_freq = tone0_freq * (30/20)
+tone3_freq = tone0_freq * (36/20)
 # globals for touch sensor callback
-touch_sensor
+touch_sensor=None
 touch_channels =(0,1,2,3)
 touch_last_data =0
-tones
+tones=[]
 
 """
 Threaded call back function on Tag-In-Range pin
@@ -79,38 +78,35 @@ def touchSensorCallback (channel):
         chanBits = 2**channel
         if (touched & chanBits) and not (touch_last_data & chanBits): # new touch
             tones [channel].start_train()
-        elif (touched_last_data & chanBits) and not(touched & chanBits): # new un-touch
+        elif (touch_last_data & chanBits) and not(touched & chanBits): # new un-touch
             tones [channel].stop_train()
             
     touch_last_data = touched
         
 """
 Main function loops through a menu presentation, running the function for the selected demo
+In most cases, we do the setup for the pins on 
 """
 def main():
     # init GPIO
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
     # make sure vibe motor is off
-    GPIO.setup (vibe_motor_pin, GPIO.OUT)
-    # make a list of 4 tones and test them
-    tones[0] = Infinite_train(PTSimpleGPIO.MODE_FREQ, tone0_pin, tone0_freq, 0.5, PTSimpleGPIO.ACC_MODE_SLEEPS_AND_SPINS)
-    tones[1] = Infinite_train(PTSimpleGPIO.MODE_FREQ, tone1_pin, tone1_freq, 0.5, PTSimpleGPIO.ACC_MODE_SLEEPS_AND_SPINS)
-    tones[2] = Infinite_train(PTSimpleGPIO.MODE_FREQ, tone2_pin, tone2_freq, 0.5, PTSimpleGPIO.ACC_MODE_SLEEPS_AND_SPINS)
-    tones[3] = Infinite_train(PTSimpleGPIO.MODE_FREQ, tone3_pin, tone3_freq, 0.5, PTSimpleGPIO.ACC_MODE_SLEEPS_AND_SPINS)
-    for tone in tones:
-        tones[tone].start_train()
-        sleep (0.2)
-    sleep (0.5)
-    for tone in tones:
-        tones[tone].stop_train()
+    GPIO.setup (vibe_motor_pin, GPIO.OUT, initial=GPIO.LOW)
+    # make a list of inifinite trains to play 4 tones, maybe don't make and destroy threads every time
+    global tones
+    tones.append (Infinite_train(PTSimpleGPIO.MODE_FREQ, tone0_pin, tone0_freq, 0.5, PTSimpleGPIO.ACC_MODE_SLEEPS_AND_SPINS))
+    tones.append (Infinite_train(PTSimpleGPIO.MODE_FREQ, tone1_pin, tone1_freq, 0.5, PTSimpleGPIO.ACC_MODE_SLEEPS_AND_SPINS))
+    tones.append (Infinite_train(PTSimpleGPIO.MODE_FREQ, tone2_pin, tone2_freq, 0.5, PTSimpleGPIO.ACC_MODE_SLEEPS_AND_SPINS))
+    tones.append (Infinite_train(PTSimpleGPIO.MODE_FREQ, tone3_pin, tone3_freq, 0.5, PTSimpleGPIO.ACC_MODE_SLEEPS_AND_SPINS))
+    
     # make a string with the menu used to get user selection
-    inputStr = '\n\n----An interactive demo of using various hardware with the Raspberry Pi.-----\n'
+    inputStr = '\n\n----An interactive demo using various hardware with the Raspberry Pi.-----\n'
     inputStr += 'Enter a number from 1 to 5\n'
     inputStr += '1 to demonstrate IR Beam Breaker\n'
     inputStr += '2 to read tags with RFID reader\n'
     inputStr += '3 to turn on/off vibration motor using a transistor\n'
-    inputStr += '4 to test your reaction time\n'
+    inputStr += '4 to test your reaction time with buttons and an LED\n'
     inputStr += '5 to use capacitive touch sensor to play tones\n'
     inputStr += ':'
     try:
@@ -236,6 +232,13 @@ def touchToneTest():
     touch_sensor = MPR121.MPR121()
     touch_sensor.begin()
     touch_sensor.set_thresholds (8,4) # as per dirkjan
+    # test tones
+    for tone in tones:
+        tone.start_train()
+        sleep (0.2)
+    sleep (0.5)
+    for tone in tones:
+        tone.stop_train()
     # set up input for IRQ interrupt
     GPIO.setup(touch_IRQ_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.add_event_detect(touch_IRQ_pin, GPIO.FALLING)
@@ -245,9 +248,9 @@ def touchToneTest():
             sleep (0.1)
     except KeyboardInterrupt:
         print ('returning to main menu')
-        # turn off al tones
+        # turn off all tones
         for tone in tones:
-            tones[tone].stop_train()
+            tone.stop_train()
         GPIO.remove_event_detect(touch_IRQ_pin)
         GPIO.cleanup (touch_IRQ_pin)
         del touch_sensor
